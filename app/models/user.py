@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 from app.models.base import Base
-from app.models.team import team_members
+from app.models.team import TeamMember as team_members
 
 
 class User(Base):

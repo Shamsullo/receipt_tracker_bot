@@ -14,14 +14,14 @@ from app.services.ocr.receipt_processor import ReceiptProcessor
 
 
 class ReceiptService(BaseService):
-    def __init__(self, session):
+    def __init__(self, session, upload_dir):
         super().__init__(session)
         self.receipt_repository = ReceiptRepository(session)
         self.team_repository = TeamRepository(session)
         self.user_repository = UserRepository(session)
 
         # Initialize required services
-        self.file_storage = FileStorageService()
+        self.file_storage = FileStorageService(upload_dir=upload_dir)
         self.ocr_service = OCRService()
         self.receipt_processor = ReceiptProcessor(
             session=session,

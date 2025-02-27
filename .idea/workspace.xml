@@ -4,14 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ddb676cf-1044-4125-a837-bc606f0f85ff" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/PythonProject.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/services/ocr/ocr.py" afterDir="false" />
+    <list default="true" id="ddb676cf-1044-4125-a837-bc606f0f85ff" name="Changes" comment="Add core project structure and initial bot implementation&#10;&#10;This commit establishes the foundational structure for the project, including the implementation of the bot, database models, receipt handling, services, and middleware. It also includes essential files such as Docker, Alembic for migrations, `.gitignore`, and configuration files to support deployment and operations.">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/alembic/env.py" beforeDir="false" afterPath="$PROJECT_DIR$/alembic/env.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/bot/handlers/receipt.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/bot/handlers/receipt.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/bot/handlers/team.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/bot/handlers/team.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/core/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/core/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/db/models_old.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/db/operations_old.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/user.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/services/ocr/receipt_processor.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/services/ocr/receipt_processor.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/services/receipt_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/services/receipt_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,6 +34,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "Shamsullo"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Shamsullo/receipt_tracker_bot.git",
+    "accountId": "95d0a78c-212c-4332-a3b7-a4f53d5b548f"
+  }
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 2
 }</component>
@@ -40,20 +57,20 @@
     <option name="showExcludedFiles" value="false" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;ml.llm.AIAssistantPromptsLibrary&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "ml.llm.AIAssistantPromptsLibrary",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/app/services/ocr" />
@@ -76,11 +93,24 @@
       <option name="presentableId" value="Default" />
       <updated>1739814011304</updated>
       <workItem from="1739814012413" duration="18244000" />
-      <workItem from="1739979509844" duration="18283000" />
+      <workItem from="1739979509844" duration="26968000" />
     </task>
+    <task id="LOCAL-00001" summary="Add core project structure and initial bot implementation&#10;&#10;This commit establishes the foundational structure for the project, including the implementation of the bot, database models, receipt handling, services, and middleware. It also includes essential files such as Docker, Alembic for migrations, `.gitignore`, and configuration files to support deployment and operations.">
+      <option name="closed" value="true" />
+      <created>1740509757154</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1740509757155</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Add core project structure and initial bot implementation&#10;&#10;This commit establishes the foundational structure for the project, including the implementation of the bot, database models, receipt handling, services, and middleware. It also includes essential files such as Docker, Alembic for migrations, `.gitignore`, and configuration files to support deployment and operations." />
+    <option name="LAST_COMMIT_MESSAGE" value="Add core project structure and initial bot implementation&#10;&#10;This commit establishes the foundational structure for the project, including the implementation of the bot, database models, receipt handling, services, and middleware. It also includes essential files such as Docker, Alembic for migrations, `.gitignore`, and configuration files to support deployment and operations." />
   </component>
 </project>

@@ -1,75 +1,61 @@
+# main.py
 import asyncio
-import logging
+from pathlib import Path
 
-from aiogram import Bot, Dispatcher, Router, types
+from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
-from app.core.config import Settings
-from app.db.operations import DatabaseManager
-from app.services.receipt_processor import ReceiptProcessor
-from app.bot.handlers.team import register_team_handlers
-from app.bot.handlers.receipt import register_receipt_handlers
+from app.bot.handlers.receipt import setup_receipt_handlers
+from app.bot.handlers.team import setup_team_handlers
+from app.core.logging import logger
 from app.bot.middlewares.auth import AuthMiddleware
-
-# Set up logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
-
-
-async def set_commands(bot: Bot):
-    commands = [
-        types.BotCommand(command="start", description="Start the bot"),
-        types.BotCommand(command="create_team",
-                         description="Create a new team"),
-        types.BotCommand(command="invite", description="Invite user to team"),
-        types.BotCommand(command="upload_receipt",
-                         description="Upload a receipt"),
-        types.BotCommand(command="list_receipts",
-                         description="List team receipts"),
-        types.BotCommand(command="help", description="Show help message"),
-    ]
-    await bot.set_my_commands(commands)
+from app.core.config import settings
+from app.services.receipt_service import ReceiptService
+from app.services.team_service import TeamService
 
 
 async def main():
-    # Load settings
-    settings = Settings()
+    logger.info("Starting bot...")
 
     # Initialize database
-    db = DatabaseManager(settings.DATABASE_URL)
-    await db.init_db()
+    engine = create_async_engine(
+        settings.DATABASE_URL,
+        echo=settings.DB_ECHO,
+    )
+    async_session = async_sessionmaker(engine, expire_on_commit=False)
 
     # Initialize services
-    receipt_processor = ReceiptProcessor(db, settings.UPLOAD_DIR)
+    team_service = TeamService(async_session)
+
+    receipt_service = ReceiptService(async_session, upload_dir=Path(settings.UPLOAD_DIR))
 
     # Initialize bot and dispatcher
     bot = Bot(token=settings.BOT_TOKEN)
-    dp = Dispatcher(storage=MemoryStorage())
+    storage = MemoryStorage()
+    dp = Dispatcher(storage=storage)
 
-    # Create main router
-    main_router = Router()
+    # Register middlewares
+    dp.message.middleware(AuthMiddleware())
 
-    # Register middleware
-    main_router.message.middleware(AuthMiddleware(db))
+    # Setup and register handlers
+    receipt_router = setup_receipt_handlers(
+        receipt_service=receipt_service,
+        team_service=team_service,
+        settings=settings
+    )
+    team_router = setup_team_handlers(team_service=team_service)
 
-    # Register handlers
-    register_team_handlers(main_router, db)
-    register_receipt_handlers(main_router, db, receipt_processor, settings)
-
-    # Include router in dispatcher
-    dp.include_router(main_router)
-
-    # Set up command descriptions
-    await set_commands(bot)
+    # Register routers
+    dp.include_router(receipt_router)
+    dp.include_router(team_router)
 
     # Start polling
     try:
         logger.info("Bot started")
         await dp.start_polling(bot)
     finally:
+        logger.info("Bot stopped")
         await bot.session.close()
 
 

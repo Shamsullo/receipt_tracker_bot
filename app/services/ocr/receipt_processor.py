@@ -3,11 +3,11 @@ from decimal import Decimal
 from typing import Dict, Any
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.logging import logger
 from app.services.file_storage import FileStorageService
 from app.services.ocr import OCRProcessingError, OCRService
 from app.repositories.receipt import ReceiptRepository
 from app.models.receipt import Receipt
-from main import logger
 
 
 class ReceiptProcessor:

@@ -5,7 +5,7 @@ from aiogram.filters import Command
 
 from app.services.team_service import TeamService
 
-logger = logging.getLogger(__name__)
+from app.core.logging import logger
 
 
 class TeamHandlers:
@@ -51,9 +51,10 @@ class TeamHandlers:
             logger.error(f"Error inviting user: {e}", exc_info=True)
             await message.reply("An error occurred while inviting the user")
 
-
-def setup_team_handlers(router: Router, team_service: TeamService):
+def setup_team_handlers(team_service: TeamService) -> Router:
+    router = Router()
     handlers = TeamHandlers(team_service)
+
     router.message.register(
         handlers.cmd_create_team,
         Command("create_team")
@@ -62,3 +63,5 @@ def setup_team_handlers(router: Router, team_service: TeamService):
         handlers.cmd_invite,
         Command("invite")
     )
+
+    return router

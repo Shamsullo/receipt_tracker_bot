@@ -1,6 +1,8 @@
 # app/core/config.py
-from pydantic_settings import BaseSettings
 from pathlib import Path
+from typing import Optional
+
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
@@ -8,23 +10,32 @@ class Settings(BaseSettings):
     BOT_TOKEN: str
 
     # Database settings
-    DATABASE_URL: str
+    DATABASE_URL: str = "sqlite+aiosqlite:///./app.db"
+    DB_ECHO: bool = False
 
-    # Storage settings
+    # File upload settings
     UPLOAD_DIR: Path = Path("uploads")
+    MAX_FILE_SIZE: int = 20 * 1024 * 1024  # 20MB
 
-    # Tesseract settings
-    TESSERACT_CMD: str = "tesseract"
+    # OCR settings
+    OCR_ENABLED: bool = True
+    TESSERACT_CMD: Optional[str] = None
+
+    # Receipt settings
+    MAX_RECEIPTS_PER_PAGE: int = 5
+    RECEIPT_PREVIEW_LENGTH: int = 100
+
+    # Team settings
+    MAX_TEAM_NAME_LENGTH: int = 50
+    MAX_TEAM_MEMBERS: int = 10
+    INVITE_LINK_EXPIRE_HOURS: int = 24
 
     class Config:
         env_file = ".env"
+        env_file_encoding = "utf-8"
 
 
 settings = Settings()
 
-# Create .env file in root directory:
-"""
-BOT_TOKEN=your_bot_token_here
-DATABASE_URL=postgresql://user:password@localhost:5432/payment_bot
-TESSERACT_CMD=tesseract
-"""
+# Create upload directory if it doesn't exist
+settings.UPLOAD_DIR.mkdir(parents=True, exist_ok=True)

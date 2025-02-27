@@ -1,7 +1,6 @@
 # app/bot/handlers/receipt.py
 from datetime import datetime
-import logging
-from typing import Optional, Union
+from typing import Union
 
 from aiogram import Router, F
 from aiogram.filters import Command
@@ -11,7 +10,27 @@ from app.services.receipt_service import ReceiptService
 from app.services.team_service import TeamService
 from app.core.config import Settings
 
-logger = logging.getLogger(__name__)
+from app.core.logging import logger
+
+def setup_receipt_handlers(
+    receipt_service: ReceiptService,
+    team_service: TeamService,
+    settings: Settings
+) -> Router:
+    router = Router()
+    handlers = ReceiptHandlers(receipt_service, team_service, settings)
+
+    router.message.register(
+        handlers.cmd_upload_receipt,
+        Command("upload_receipt"),
+        F.document | F.photo
+    )
+    router.message.register(
+        handlers.cmd_list_receipts,
+        Command("list_receipts")
+    )
+
+    return router
 
 
 class ReceiptHandlers:
