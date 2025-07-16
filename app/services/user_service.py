@@ -1,50 +1,38 @@
-from typing import Optional
-from app.models.user import User
+# app/services/user_service.py
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.repositories.user import UserRepository
-from .base import BaseService
+from app.models.user import User
+from app.core.logging import logger
 
 
-class UserService(BaseService):
-    def __init__(self, session):
-        super().__init__(session)
-        self.user_repository = UserRepository(session)
+class UserService:
+    def __init__(self, session_factory: AsyncSession):
+        self.session_factory = session_factory
 
     async def get_or_create_user(
             self,
-            telegram_id: int,
-            username: str,
-            full_name: str
+            user_id: int,
+            username: str | None,
+            first_name: str | None,
+            last_name: str | None
     ) -> User:
-        """Get existing user or create new one from Telegram data."""
-        user = await self.user_repository.get_by_telegram_id(telegram_id)
-        if not user:
-            user = await self.user_repository.create_from_telegram(
-                telegram_id=telegram_id,
-                username=username,
-                full_name=full_name
-            )
-        return user
+        async with self.session_factory() as session:
+            repository = UserRepository(session)
+            user = await repository.get_by_telegram_id(user_id)
 
-    async def get_by_telegram_id(self, telegram_id: int) -> Optional[User]:
-        """Get user by Telegram ID."""
-        return await self.user_repository.get_by_telegram_id(telegram_id)
+            if not user:
+                user = await repository.create(
+                    telegram_id=user_id,
+                    username=username,
+                    first_name=first_name,
+                    last_name=last_name
+                )
+                await session.commit()
+                logger.info(f"Created new user: {user_id}")
 
-    async def get_by_username(self, username: str) -> Optional[User]:
-        """Get user by username."""
-        return await self.user_repository.get_by_username(username)
+            return user
 
-    async def update_user_info(
-            self,
-            telegram_id: int,
-            username: str,
-            full_name: str
-    ) -> Optional[User]:
-        """Update user information."""
-        user = await self.get_by_telegram_id(telegram_id)
-        if user:
-            return await self.user_repository.update(
-                user.id,
-                username=username,
-                full_name=full_name
-            )
-        return None
+    async def get_user(self, user_id: int) -> User | None:
+        async with self.session_factory() as session:
+            repository = UserRepository(session)
+            return await repository.get_by_telegram_id(user_id)
